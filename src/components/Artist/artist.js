@@ -20,7 +20,7 @@ export class Artist extends React.Component {
 
     render() {
         return (
-            <div>
+            <>
                 <img src={this.state.image_url}/>
                 <p>
                     {this.state.name}
@@ -28,7 +28,7 @@ export class Artist extends React.Component {
                 <p>
                     {this.state.bio}
                 </p>
-            </div>
+            </>
         );
     }
 }

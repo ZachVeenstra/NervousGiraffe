@@ -1,48 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Artwork } from './artwork';
 import { db } from '../../config/firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
+import { Link, Outlet } from "react-router-dom";
+import { CreateArtwork } from "./createArtwork";
 
-export class ArtworkList extends React.Component {
-    constructor(props) {
-        
-        super(props);
-        this.artworks = null
-        if (props.artworks != null) {
-            this.artworks = props.artworks
-        }
-        else {
-            this.fetchArtworks()
-        }
-        
-        this.state = {
-            artworks: this.artworks
-        };
-    }
+export default function ArtworkList({ artworks = []}) {
+    const [state, setState] = useState([]);
 
-    fetchArtworks = () => {
-        onSnapshot(collection(db, "artworks"), (snapshot) => 
-            this.state.artworks = snapshot.docs.map((doc) => ({...doc.data(), id: doc.id}))
-        )
-    }
+    useEffect(
+        () => 
+          fetchArtworks(),
+        [state]
+    );
 
-    componentDidMount() {
-        if (this.state.artworks.length == 0) {
-            this.fetchArtworks()
+    const fetchArtworks = () => {
+        if (artworks.length == 0) {
+            onSnapshot(collection(db, "artworks"), (snapshot) => 
+                setState(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
+            );
+        } else {
+            setState(artworks);
         }
     }
 
-    render() {
-        return (
-            <div>
-                <ul>
-                    {this.state.artworks.map((artwork) =>  (
-                        <li className="list-item" key={artwork.id}>
+    const deleteArtwork = async (id) => {
+        const docRef = doc(db, 'artworks', id);
+        await deleteDoc(docRef);
+        fetchArtworks();
+    }
+
+    return (
+        <>
+            <Outlet />
+            <Link to="/artworks/new">New Artwork</Link>
+            <ul>
+                {state.map((artwork) =>  (
+                    <li className="list-item" key={artwork.id}>
                         <Artwork artwork={artwork}/>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        );
-    }
+                        <button onClick={() => deleteArtwork(artwork.id)}>Delete Artwork</button>
+                    </li>
+                ))}
+            </ul>
+        </>
+    );
 }
