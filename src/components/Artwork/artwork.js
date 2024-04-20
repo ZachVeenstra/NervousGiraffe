@@ -1,6 +1,4 @@
-import "./artwork.css"
 import React from "react";
-import { db } from "../../config/firebase"
 import { getDoc } from "firebase/firestore";
 
 export class Artwork extends React.Component {
@@ -33,14 +31,16 @@ export class Artwork extends React.Component {
         return (
             <div>
                 <img src={this.state.image_url}/>
-                <p>
+                <p className="title">
                     <em>{this.state.title}</em> – {this.state.artist_name}
                 </p>
                 <p>
                     {this.state.description}
                 </p>
-                {this.state.is_available_as_print && <button>Purchase Print</button>}
-                {this.state.is_for_sale && <button>Purchase Original</button>}
+                <span className="purchase-buttons">
+                    {this.state.is_available_as_print && <button>Purchase Print</button>}
+                    {this.state.is_for_sale && <button>Purchase Original</button>}
+                </span>
             </div>
         );
     }
