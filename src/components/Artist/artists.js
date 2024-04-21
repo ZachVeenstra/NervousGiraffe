@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Artist } from "./artist";
-import { db } from '../../config/firebase';
+import { db, storage } from '../../config/firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { Link, Outlet } from "react-router-dom";
+import { deleteObject, ref } from "firebase/storage";
 
 export default function Artists({artists = []}) {
     const [state, setState] = useState([]);
@@ -14,7 +15,7 @@ export default function Artists({artists = []}) {
     );
 
     const fetchArtists = () => {
-        if (artists.length == 0) {
+        if (artists.length === 0) {
             onSnapshot(collection(db, "artists"), (snapshot) => 
                 setState(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
             );
@@ -25,8 +26,14 @@ export default function Artists({artists = []}) {
 
     const deleteArtist = async (id) => {
         const docRef = doc(db, 'artists', id);
-        await deleteDoc(docRef);
-        fetchArtists();
+        const fileRef = ref(storage, `artistImages/${docRef.id}`)
+        try {
+            await deleteDoc(docRef);
+            await deleteObject(fileRef);
+            fetchArtists();
+        } catch (error) {
+            console.error(error);
+        }
     }
     
     return (

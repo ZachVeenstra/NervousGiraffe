@@ -3,19 +3,12 @@ import { Artwork } from './artwork';
 import { db } from '../../config/firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { Link, Outlet } from "react-router-dom";
-import { CreateArtwork } from "./createArtwork";
 
 export default function ArtworkList({ artworks = []}) {
     const [state, setState] = useState([]);
 
-    useEffect(
-        () => 
-          fetchArtworks(),
-        [state]
-    );
-
     const fetchArtworks = () => {
-        if (artworks.length == 0) {
+        if (artworks.length === 0) {
             onSnapshot(collection(db, "artworks"), (snapshot) => 
                 setState(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
             );
@@ -23,6 +16,12 @@ export default function ArtworkList({ artworks = []}) {
             setState(artworks);
         }
     }
+
+    useEffect(
+        () => 
+          fetchArtworks(),
+        [state]
+    );
 
     const deleteArtwork = async (id) => {
         const docRef = doc(db, 'artworks', id);
