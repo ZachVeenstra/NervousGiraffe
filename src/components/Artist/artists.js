@@ -26,7 +26,7 @@ export default function Artists({artists = []}) {
 
     const deleteArtist = async (id) => {
         const docRef = doc(db, 'artists', id);
-        const fileRef = ref(storage, `artistImages/${docRef.id}`)
+        const fileRef = ref(storage, `artistImages/${docRef.id}`);
         try {
             await deleteDoc(docRef);
             await deleteObject(fileRef);

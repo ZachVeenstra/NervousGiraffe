@@ -1,7 +1,8 @@
-import { addDoc, collection } from "firebase/firestore";
-import React, { useEffect, useLayoutEffect, useReducer } from "react";
-import { db } from "../../config/firebase";
+import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import React, { useEffect, useReducer, useState } from "react";
+import { db, storage } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const CreateArtwork = ({artwork = {}}) => {
     const initialState = {
@@ -12,41 +13,84 @@ export const CreateArtwork = ({artwork = {}}) => {
         is_for_sale: false,
         price: 0,
         title: '',
+        image_file: null,
     };
 
     const [state, updateState] = useReducer(
         (state, updates) => ({ ...state, ...updates }),
         artwork != null ? artwork : initialState
     );
+    const [artists, setArtists] = useState([]);
 
     const navigate = useNavigate();
+
+    const uploadArtworkImage = async (image_file, file_name, docRef) => {
+        if (!image_file) {
+            console.log("Image does not exist.")
+            return;
+        }
+        const fileRef = ref(storage, file_name)
+        console.log("image uploading")
+        uploadBytes(fileRef, image_file)
+            .then((snapshot) => {
+                getDownloadURL(snapshot.ref)
+                    .then((url) => {
+                        console.log(url)
+                        updateState({image_url: url});
+                        updateDoc(docRef, {image_url: url});
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
     
     const createArtwork = async () => {
         try {
             const collectionRef = collection(db, 'artworks');
-            await addDoc(collectionRef, {
-                artist: state.artist,
+            const docRef = await addDoc(collectionRef, {
+                artist: doc(db, state.artist),
                 description: state.description,
-                image_url: state.image_url,
+                image_url: '',
                 is_available_as_print: state.is_available_as_print,
                 is_for_sale: state.is_for_sale,
                 price: state.price,
                 title: state.title
-            })
-            navigate("/artworks")
+            });
+            const image_path = `artworkImages/${docRef.id}`;
+            await uploadArtworkImage(state.image_file, image_path, docRef);
+            
+            navigate("/artworks");
         } catch (error) {
             console.error(error);
         }
     };
 
+    useEffect(
+        () => 
+          onSnapshot(collection(db, "artists"), (snapshot) => {
+            setArtists(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
+          }
+          ),
+        []
+      );
+
     return (
         <div>
-            {/* TODO: Dropdown with artist picker. */}
-            <input 
-                placeholder="Artist"
-                value={state.artist}
-                onChange={(e) => updateState({artist: e.target.value})}
-            />
+            <label htmlFor="select_artist">Artist</label>
+            <select name="select_artist" id="select_artist"
+                onChange={(e) =>{
+                    console.log(e.target.value)
+                    updateState({artist: e.target.value})
+                }}
+            >
+                {artists.map((artist) => (
+                    <option value={doc(db, 'artists', artist.id).path}>{artist.name}</option>
+                ))}
+            </select>
 
             <input 
                 placeholder="Title"
@@ -84,7 +128,10 @@ export const CreateArtwork = ({artwork = {}}) => {
             />
             
             <label htmlFor="artwork_image_file">Select an image:</label>
-            <input type="file" id="artwork_image_file"/>
+            <input type="file" id="artwork_image_file"
+                accept="image/png,image/jpeg"
+                onChange={(e) => updateState({image_file: e.target.files[0]})}
+            />
 
             <button onClick={createArtwork}>Create Artwork</button>
         </div>

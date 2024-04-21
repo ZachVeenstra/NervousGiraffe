@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Artwork } from './artwork';
-import { db } from '../../config/firebase';
+import { db, storage } from '../../config/firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { Link, Outlet } from "react-router-dom";
+import { deleteObject, ref } from "firebase/storage";
 
 export default function ArtworkList({ artworks = []}) {
     const [state, setState] = useState([]);
+
+    useEffect(
+        () => 
+          fetchArtworks(),
+        [state]
+    );
 
     const fetchArtworks = () => {
         if (artworks.length === 0) {
@@ -17,16 +24,16 @@ export default function ArtworkList({ artworks = []}) {
         }
     }
 
-    useEffect(
-        () => 
-          fetchArtworks(),
-        [state]
-    );
-
     const deleteArtwork = async (id) => {
         const docRef = doc(db, 'artworks', id);
-        await deleteDoc(docRef);
-        fetchArtworks();
+        const fileRef = ref(storage, `artworkImages/${docRef.id}`);
+        try {
+            await deleteDoc(docRef);
+            await deleteObject(fileRef);
+            fetchArtworks();
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (

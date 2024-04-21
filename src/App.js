@@ -14,7 +14,7 @@ import { CreateArtwork } from './components/Artwork/createArtwork';
 
 function App() {
   const [artworks, setArtworks] = useState([]);
-  const [artists, setArtists] = useState([])
+  const [artists, setArtists] = useState([]);
 
   useEffect(
     () => 

@@ -21,9 +21,9 @@ export const CreateArtist = ({artist = {}}) => {
 
     const uploadImage = async (image_file, file_name, docRef) => {
         if (!image_file) return;
-        const artworkFolderRef = ref(storage, file_name)
+        const fileRef = ref(storage, file_name)
 
-        uploadBytes(artworkFolderRef, image_file)
+        uploadBytes(fileRef, image_file)
             .then((snapshot) => {
                 getDownloadURL(snapshot.ref)
                     .then((url) => {
@@ -47,7 +47,7 @@ export const CreateArtist = ({artist = {}}) => {
             const image_path = `artistImages/${docRef.id}`;
             await uploadImage(state.image_file, image_path, docRef);
 
-            navigate("/artists")
+            navigate("/artists");
         } catch (error) {
             console.error(error);
         }
