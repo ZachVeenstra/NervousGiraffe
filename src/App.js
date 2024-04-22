@@ -6,11 +6,11 @@ import { Navbar } from './components/Navbar/navbar';
 import ArtworkList from './components/Artwork/artworklist';
 import { Auth } from './components/auth';
 import { Route, Routes } from "react-router-dom"
-import { Home } from './components/Home/home'
+import Home from './components/Home/home'
 import Artists from './components/Artist/artists';
 import Whoops404 from './components/404/whoops404';
-import { CreateArtwork } from './components/Artwork/createArtwork';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import WebService from './components/WebService/webService';
 
 function App() {
   const [artworks, setArtworks] = useState([]);
@@ -38,12 +38,11 @@ function App() {
           <Navbar/>
       </header>
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Home artworks={artworks} artists={artists}/>} />
         <Route path='/login' element={<Auth />} />
         <Route path='/artists' element={<Artists artists={artists}/>}/>
-        <Route path='/artworks' element={<ArtworkList artworks={artworks}/>}>
-          <Route path='new' element={<CreateArtwork />}/>
-        </Route>
+        <Route path='/artworks' element={<ArtworkList artworks={artworks}/>}/>
+        <Route path='/about' element={<WebService />} />
         <Route path="*" element={<Whoops404 />} />
       </Routes>
     </div>

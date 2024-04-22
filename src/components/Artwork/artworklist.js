@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Artwork } from './artwork';
+import Artwork from './artwork';
 import { db, storage } from '../../config/firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { deleteObject, ref } from "firebase/storage";
@@ -51,7 +51,7 @@ export default function ArtworkList({ artworks = []}) {
 
     return (
         <>
-            <Container>
+            <Container className="p-3">
                 <Row>
                     <Col>
                         <CreateArtwork fetchArtworks={fetchArtworks} />
