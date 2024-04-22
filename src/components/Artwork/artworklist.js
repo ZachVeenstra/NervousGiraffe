@@ -19,18 +19,18 @@ export default function ArtworkList({ artworks = []}) {
         } else {
             setState(artworks);
         }
-    }, []);
+    }, [artworks]);
 
     useEffect(
         () => 
           fetchArtworks(),
-        [fetchArtworks]
+        [fetchArtworks, state]
     );
 
     const removeArtwork = (artwork) => {
         var stateCopy = [...state];
         var indexOfItemToRemove = stateCopy.indexOf(artwork);
-        if (indexOfItemToRemove != -1) {
+        if (indexOfItemToRemove !== -1) {
             stateCopy.splice(indexOfItemToRemove, 1);
             setState(stateCopy)
         }

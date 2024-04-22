@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { useEffect, useReducer, useState } from "react";
 import { db, storage } from "../../config/firebase";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -87,7 +87,7 @@ export const EditArtwork = ({artwork = {}, fetchArtworks, }) => {
               setArtists(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
             }
             )},
-        []
+        [artwork]
     );
 
     

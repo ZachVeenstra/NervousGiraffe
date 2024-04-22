@@ -41,6 +41,7 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                         console.log(url)
                         updateState({image_url: url});
                         updateDoc(docRef, {image_url: url});
+                        fetchArtworks();
                     })
                     .catch((error) => {
                         console.error(error);
@@ -65,7 +66,6 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
             });
             const image_path = `artworkImages/${docRef.id}`;
             await uploadArtworkImage(state.image_file, image_path, docRef);
-            fetchArtworks();
             handleClose();
         } catch (error) {
             console.error(error);
