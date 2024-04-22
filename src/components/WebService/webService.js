@@ -28,7 +28,7 @@ export default function WebService () {
             <Row>
                 <Col>
                     <h1 className="display-4">Artists</h1>
-                    <Table striped bordered hover>
+                    <Table responsive striped bordered hover>
                         <thead>
                             <tr>
                                 <th>id</th>
@@ -54,7 +54,7 @@ export default function WebService () {
             <Row>
                 <Col>
                     <h1 className="display-4">Artworks</h1>
-                    <Table striped bordered hover>
+                    <Table responsive striped bordered hover>
                         <thead>
                             <tr>
                                 <th>id</th>

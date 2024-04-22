@@ -46,6 +46,7 @@ export const CreateArtwork = ({ fetchArtworks, }) => {
                         } catch (error) {
                             console.error(error)
                         }
+                        return url;
                     })
                     .catch((error) => {
                         console.error(error);
@@ -69,7 +70,8 @@ export const CreateArtwork = ({ fetchArtworks, }) => {
                 title: state.title
             });
             const image_path = `artworkImages/${docRef.id}`;
-            await uploadArtworkImage(state.image_file, image_path, docRef);
+            const url = await uploadArtworkImage(state.image_file, image_path, docRef);
+            console.log(`URL: ${url}`)
             handleClose();
         } catch (error) {
             console.error(error);
@@ -88,7 +90,7 @@ export const CreateArtwork = ({ fetchArtworks, }) => {
     
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>Create Artwork</Button>
+            <Button id="create-artwork" variant="primary" onClick={handleShow}>Create Artwork</Button>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create Artwork</Modal.Title>
