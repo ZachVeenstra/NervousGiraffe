@@ -31,6 +31,12 @@ export const EditArtwork = ({artwork = {}, fetchArtworks, }) => {
                         console.log(url)
                         updateState({image_url: url});
                         updateDoc(docRef, {image_url: url});
+
+                        try {
+                            fetchArtworks();
+                        } catch (error) {
+                            console.error(error)
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
@@ -68,11 +74,15 @@ export const EditArtwork = ({artwork = {}, fetchArtworks, }) => {
 
                     await uploadArtworkImage(state.image_file, image_path, artworkRef);
                 }
+            
+                try {
+                    fetchArtworks();
+                } catch (error) {
+                    console.error(error)
+                }
             } catch (error) {
                 console.error();
             }
-            
-            // fetchArtworks();
             handleClose();
         } catch (error) {
             console.error(error);

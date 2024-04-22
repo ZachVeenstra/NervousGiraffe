@@ -5,7 +5,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Form from 'react-bootstrap/Form';
 import { Button, InputGroup, Modal } from "react-bootstrap";
 
-export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
+export const CreateArtwork = ({ fetchArtworks, }) => {
     const initialState = {
         artist: null,
         description: '',
@@ -19,7 +19,7 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
 
     const [state, updateState] = useReducer(
         (state, updates) => ({ ...state, ...updates }),
-        artwork != null ? artwork : initialState
+        initialState
     );
     const [artists, setArtists] = useState([]);
 
@@ -41,7 +41,11 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                         console.log(url)
                         updateState({image_url: url});
                         updateDoc(docRef, {image_url: url});
-                        fetchArtworks();
+                        try {
+                            fetchArtworks();
+                        } catch (error) {
+                            console.error(error)
+                        }
                     })
                     .catch((error) => {
                         console.error(error);
@@ -74,8 +78,6 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
 
     useEffect(
         () => {
-            updateState(artwork);
-
             onSnapshot(collection(db, "artists"), (snapshot) => {
               setArtists(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
             }

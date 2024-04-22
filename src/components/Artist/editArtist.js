@@ -1,20 +1,14 @@
-import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import React, { useReducer, useState } from "react";
 import { db, storage } from "../../config/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Button, Form, Modal } from "react-bootstrap";
 
-export const CreateArtist = ({ fetchArtists, }) => {
-    const initialState = {
-        bio: '',
-        image_url: '',
-        name: '',
-        image_file: null,
-    };
+export const EditArtist = ({artist = {}, fetchArtists, }) => {
 
     const [state, updateState] = useReducer(
         (state, updates) => ({ ...state, ...updates }),
-        initialState
+        artist
     );
 
     const [show, setShow] = useState(false);
@@ -32,6 +26,7 @@ export const CreateArtist = ({ fetchArtists, }) => {
                         console.log(url)
                         updateState({image_url: url});
                         updateDoc(docRef, {image_url: url});
+
                         try {
                             fetchArtists();
                         } catch (error) {
@@ -47,13 +42,34 @@ export const CreateArtist = ({ fetchArtists, }) => {
             });
     };
     
-    const createArtist = async () => {
+    const editArtist = async () => {
         try {
-            const collectionRef = collection(db, 'artists');
-            const docRef = await addDoc(collectionRef, {name: state.name, bio: state.bio, image_url: ''});
-            const image_path = `artistImages/${docRef.id}`;
-            await uploadImage(state.image_file, image_path, docRef);
+            const artistRef = doc(db, 'artists', artist.id);
 
+            await updateDoc(artistRef, {
+                bio: state.bio,
+                image_url: state.image_url,
+                name: state.name,
+            })
+
+            try {
+                const image_path = `artistImages/${artistRef.id}`;
+                if (state.image_file != null) {
+                    const fileRef = ref(storage, image_path);
+                    await deleteObject(fileRef);
+
+                    await uploadImage(state.image_file, image_path, artistRef);
+                }
+
+
+                try {
+                    fetchArtists();
+                } catch (error) {
+                    console.error(error)
+                }
+            } catch (error) {
+                console.error(error)
+            }
             handleClose();
         } catch (error) {
             console.error(error);
@@ -62,10 +78,10 @@ export const CreateArtist = ({ fetchArtists, }) => {
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>Create Artist</Button>
+            <Button variant="primary" onClick={handleShow}>Edit Artist</Button>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Artist</Modal.Title>
+                    <Modal.Title>Edit Artist</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
@@ -74,6 +90,7 @@ export const CreateArtist = ({ fetchArtists, }) => {
                             <Form.Floating>
                                 <Form.Control
                                     placeholder="Name"
+                                    value={state.name}
                                     onChange={(e) => updateState({name: e.target.value})}
                                 />
                                 <Form.Label>Name</Form.Label>
@@ -84,6 +101,7 @@ export const CreateArtist = ({ fetchArtists, }) => {
                             <Form.Floating>
                                 <Form.Control
                                     placeholder="Bio"
+                                    value={state.bio}
                                     onChange={(e) => updateState({bio: e.target.value})}
                                 />
                                 <Form.Label>Bio</Form.Label>
@@ -101,7 +119,7 @@ export const CreateArtist = ({ fetchArtists, }) => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>Close</Button>
-                    <Button variant="primary" onClick={createArtist}>Save changes</Button>
+                    <Button variant="primary" onClick={editArtist}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
         </>

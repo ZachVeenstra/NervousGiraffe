@@ -1,6 +1,6 @@
 import React from "react";
 import { getDoc } from "firebase/firestore";
-import { Card} from "react-bootstrap";
+import { Button, Card} from "react-bootstrap";
 
 export class Artwork extends React.Component {
     getArtistFromReference = async (artistDocRef) => {
@@ -37,6 +37,8 @@ export class Artwork extends React.Component {
                     <Card.Text>
                         {this.state.description}
                     </Card.Text>
+                    <Button variant="secondary">View the Artist</Button>
+                    {/* TODO: Add a modal to show the artist. */}
                 </Card.Body>
                 {/* <span className="purchase-buttons">
                     {this.state.is_available_as_print && <button>Purchase Print</button>}

@@ -1,6 +1,7 @@
 import { deleteDoc, doc } from "firebase/firestore";
 import React from "react";
 import { db } from "../../config/firebase";
+import { Card } from "react-bootstrap";
 
 export class Artist extends React.Component {
     constructor(props) {
@@ -20,15 +21,13 @@ export class Artist extends React.Component {
 
     render() {
         return (
-            <>
-                <img src={this.state.image_url}/>
-                <p>
-                    {this.state.name}
-                </p>
-                <p>
-                    {this.state.bio}
-                </p>
-            </>
+            <Card>
+                <Card.Img variant="top" src={this.state.image_url}/>
+                <Card.Body>
+                    <Card.Title>{this.state.name}</Card.Title>
+                    <Card.Text>{this.state.bio}</Card.Text>
+                </Card.Body>
+            </Card>
         );
     }
 }
