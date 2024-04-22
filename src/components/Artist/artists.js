@@ -22,7 +22,7 @@ export default function Artists({artists = []}) {
         } else {
             setState(artists);
         }
-    }
+    };
 
     const deleteArtist = async (id) => {
         const docRef = doc(db, 'artists', id);
@@ -34,7 +34,7 @@ export default function Artists({artists = []}) {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
     
     return (
         <>

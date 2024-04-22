@@ -1,25 +1,15 @@
 import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import React, { useEffect, useReducer, useState } from "react";
 import { db, storage } from "../../config/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Form from 'react-bootstrap/Form';
 import { Button, InputGroup, Modal } from "react-bootstrap";
 
-export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
-    const initialState = {
-        artist: null,
-        description: '',
-        image_url: '',
-        is_available_as_print: false,
-        is_for_sale: false,
-        price: 0,
-        title: '',
-        image_file: null,
-    };
+export const EditArtwork = ({artwork = {}, fetchArtworks, }) => {
 
     const [state, updateState] = useReducer(
         (state, updates) => ({ ...state, ...updates }),
-        artwork != null ? artwork : initialState
+        artwork
     );
     const [artists, setArtists] = useState([]);
 
@@ -51,21 +41,38 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
             });
     };
     
-    const createArtwork = async () => {
+    const editArtwork = async () => {
         try {
-            const collectionRef = collection(db, 'artworks');
-            const docRef = await addDoc(collectionRef, {
-                artist: doc(db, state.artist),
+            const artworkRef = doc(db, 'artworks', artwork.id);
+
+            await updateDoc(artworkRef, {
                 description: state.description,
-                image_url: '',
+                image_url: state.image_url,
                 is_available_as_print: state.is_available_as_print,
                 is_for_sale: state.is_for_sale,
                 price: state.price,
                 title: state.title
             });
-            const image_path = `artworkImages/${docRef.id}`;
-            await uploadArtworkImage(state.image_file, image_path, docRef);
-            fetchArtworks();
+
+            if (state.artist_ref != null) {
+                await updateDoc(artworkRef, {
+                    artist: doc(db, state.artist_ref),
+                });
+            }
+            
+            try {
+                const image_path = `artworkImages/${artworkRef.id}`;
+                if (state.image_file != null) {
+                    const fileRef = ref(storage, image_path);
+                    await deleteObject(fileRef);
+
+                    await uploadArtworkImage(state.image_file, image_path, artworkRef);
+                }
+            } catch (error) {
+                console.error();
+            }
+            
+            // fetchArtworks();
             handleClose();
         } catch (error) {
             console.error(error);
@@ -86,10 +93,10 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
     
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>Create Artwork</Button>
+            <Button variant="primary" onClick={handleShow}>Edit Artwork</Button>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Artwork</Modal.Title>
+                    <Modal.Title>Edit Artwork</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
@@ -97,12 +104,12 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                         <Form.Group className="mb-3">
                             <Form.Select
                                 onChange={(e) =>{
-                                    updateState({artist: e.target.value})
+                                    updateState({artist_ref: e.target.value})
                                 }}
                             >
-                                <option selected disabled hidden>Select an artist:</option>
+                                <option disabled hidden>Select an artist:</option>
                                 {artists.map((artist) => (
-                                    <option key={artist.id} value={doc(db, 'artists', artist.id).path}>{artist.name}</option>
+                                    <option selected={state.artist.id === artist.id ? "selected" : ""} key={artist.id} value={doc(db, 'artists', artist.id).path}>{artist.name}</option>
                                 ))}
                             </Form.Select>
                         </Form.Group>
@@ -111,6 +118,7 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                             <Form.Floating>
                                 <Form.Control
                                     placeholder="Title"
+                                    value={state.title}
                                     onChange={(e) => updateState({title: e.target.value})}
                                 />
                                 <Form.Label>Title</Form.Label>
@@ -120,16 +128,19 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                         <InputGroup className="mb-3">
                             <InputGroup.Text>Description</InputGroup.Text>
                             <Form.Control as="textarea" rows={2}
+                                value={state.description}
                                 onChange={(e) => updateState({description: e.target.value})}
                             />
                         </InputGroup>
                         
                         <Form.Group className="mb-3">
                             <Form.Check
+                                checked={state.is_available_as_print}
                                 onChange={(e) => updateState({is_available_as_print: e.target.checked})}
                                 label={"Available as a print?"}
                             />
                             <Form.Check
+                                checked={state.is_for_sale}
                                 onChange={(e) => updateState({is_for_sale: e.target.checked})}
                                 label={"Is for sale?"}
                             />
@@ -138,6 +149,7 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                         <InputGroup className="mb-3">
                             <InputGroup.Text>$</InputGroup.Text>
                             <Form.Control aria-label="Price (to the nearest dollar"
+                                value={state.price}
                                 onChange={(e) => updateState({price: e.target.value})}
                             />
                             <InputGroup.Text>.00</InputGroup.Text>
@@ -154,7 +166,7 @@ export const CreateArtwork = ({artwork = {}, fetchArtworks, }) => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>Close</Button>
-                    <Button variant="primary" onClick={createArtwork}>Save changes</Button>
+                    <Button variant="primary" onClick={editArtwork}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
         </>

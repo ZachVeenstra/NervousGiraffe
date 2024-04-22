@@ -8,9 +8,9 @@ import { Auth } from './components/auth';
 import { Route, Routes } from "react-router-dom"
 import { Home } from './components/Home/home'
 import Artists from './components/Artist/artists';
-import { CreateArtist } from './components/Artist/createArtist';
 import Whoops404 from './components/404/whoops404';
 import { CreateArtwork } from './components/Artwork/createArtwork';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [artworks, setArtworks] = useState([]);
@@ -40,9 +40,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Auth />} />
-        <Route path='/artists' element={<Artists artists={artists}/>}>
-          <Route path='new' element={<CreateArtist/>}/>
-        </Route>
+        <Route path='/artists' element={<Artists artists={artists}/>}/>
         <Route path='/artworks' element={<ArtworkList artworks={artworks}/>}>
           <Route path='new' element={<CreateArtwork />}/>
         </Route>
