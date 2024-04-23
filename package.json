@@ -24,7 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "cucumber": "node_modules/.bin/cucumber-js features/create.feature"
+    "cucumber": "node_modules/.bin/cucumber-js features/authentication.feature"
   },
   "eslintConfig": {
     "extends": [

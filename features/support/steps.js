@@ -15,15 +15,38 @@ AfterAll(() => {
   }
 })
 
-When('I visit the artists page', () => {
-    // get returns a promise. Remember to return this promise
-    // so the runner knows when to move onto the next step.
-    return driver.get('http://localhost:3000/artworks')
+When('I click the login button on the navbar', async () => {
+  const loginButton = await driver.findElement(By.id("nav-login"));
+  loginButton.click();
+})
+
+When('I type in my email {string}', async (email) => {
+  const emailInput = await driver.findElement(By.id("auth-email"));
+  emailInput.sendKeys(email)
+})
+
+When('I type in my password {string}', async (password) => {
+  const passwordInput = await driver.findElement(By.id("auth-password"));
+  passwordInput.sendKeys(password)
+})
+
+When('I click the login button', async () => {
+  const loginButton = await driver.findElement(By.id('auth-login'));
+  loginButton.click();
+})
+
+Then('I should be on the home page', async () => {
+  expect(driver.getCurrentUrl() === 'http://localhost:3000/');
+})
+
+
+When('I visit the artworks page', async () => {
+    const loginButton = await driver.findElement(By.id("nav-artworks"));
+    loginButton.click();
 })
 
 Given('I click the create artwork button', async () => {
     const createButton = await driver.findElement(By.id('create-artwork'));
-    // await driver.wait(until.elementIsVisible(createButton), 6000);
     createButton.click();
 })
 

@@ -35,13 +35,13 @@ export default function Navbar () {
                         <Link to="/artists">Artists</Link>
                     </li>
                     <li>
-                        <Link to="/artworks">Artworks</Link>
+                        <Link id="nav-artworks" to="/artworks">Artworks</Link>
                     </li>
                     {isAuthenticated && <li>
                         <Link to="/about">About</Link>
                     </li>}
                     <li>
-                        {isAuthenticated ? <button onClick={logout}>Logout</button> : <Link to="/login">Login</Link> }
+                        {isAuthenticated ? <button onClick={logout}>Logout</button> : <Link id="nav-login" to="/login">Login</Link> }
                     </li>
                 </ul>
             </nav>

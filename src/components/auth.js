@@ -28,19 +28,19 @@ export const Auth = () => {
                 <Form>
                     <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Email address</Form.Label>
-                        <Form.Control type="email" placeholder="name@example.com" onChange={(e) => setEmail(e.target.value)} />
+                        <Form.Control id="auth-email" type="email" placeholder="name@example.com" onChange={(e) => setEmail(e.target.value)} />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label htmlFor="inputPassword5">Password</Form.Label>
+                        <Form.Label htmlFor="auth-password">Password</Form.Label>
                         <Form.Control
                             type="password"
-                            id="inputPassword5"
+                            id="auth-password"
                             onChange={(e) => setPassword(e.target.value)}    
                             aria-describedby="passwordHelpBlock"
                         />
                     </Form.Group>
-                    <Button onClick={login}>Login</Button>
+                    <Button id="auth-login" onClick={login}>Login</Button>
                 </Form>
             </Row>
         </Col>
