@@ -42,8 +42,9 @@ export default function Artwork({ artwork = {} }) {
                 <Button variant="secondary" onClick={handleShow}>View the Artist</Button>
             </Card.Body>
             <Card.Footer>
-                {state.is_available_as_print && <Button className="mr-3">Purchase Print</Button>}
-                {state.is_for_sale && <Button>Purchase Original</Button>}
+                {/* TODO: Implement these buttons when purchasing becomes available. */}
+                {/* {state.is_available_as_print && <Button className="mr-3">Purchase Print</Button>}
+                {state.is_for_sale && <Button>Purchase Original</Button>} */}
             </Card.Footer>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Artwork from './artwork';
-import { db, storage } from '../../config/firebase';
+import { auth, db, storage } from '../../config/firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { deleteObject, ref } from "firebase/storage";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -9,6 +9,20 @@ import { EditArtwork } from "./editArtwork";
 
 export default function ArtworkList({ artworks = []}) {
     const [state, setState] = useState([]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Authenticated!");
+                setIsAuthenticated(true);
+            } else {
+                console.log("Logged out!");
+                setIsAuthenticated(false);
+            }
+        });
+        return unsubscribe;
+    }, []);
 
     const fetchArtworks = useCallback(() => {
         console.log("Fetching artworks...")
@@ -54,24 +68,20 @@ export default function ArtworkList({ artworks = []}) {
             <Container className="p-3">
                 <Row>
                     <Col>
-                        <CreateArtwork fetchArtworks={fetchArtworks} />
+                        {isAuthenticated && <CreateArtwork fetchArtworks={fetchArtworks} />}
                     </Col>
                 </Row>
-                <Row>
-                    <ul>
-                        {state.map((artwork) =>  (
-                            <li className="list-item" key={artwork.id}>
-                                <Col className="mb-3">
-                                    <Artwork artwork={artwork}/>
-                                    <EditArtwork artwork={artwork} fetchArtworks={fetchArtworks} />
-                                    <Button className="btn-danger" onClick={() => deleteArtwork(artwork)}>Delete Artwork</Button>
-                                </Col>
-                            </li>
-                        ))}
-                    </ul>
+                <Row className="justify-content-center">
+                    {state.map((artwork) =>  (
+                        <Col key={artwork.id} className="col-sm-12 col-md-12 col-lg-6 col-xl-6 col-12 mb-3">
+                            <Artwork artwork={artwork}/>
+                            {isAuthenticated && <span>
+                                <EditArtwork artwork={artwork} fetchArtworks={fetchArtworks} />
+                                <Button className="btn-danger" onClick={() => deleteArtwork(artwork)}>Delete Artwork</Button>
+                            </span>}
+                        </Col>
+                    ))}
                 </Row>
-                
-
             </Container>
         </>
     );

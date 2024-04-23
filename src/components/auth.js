@@ -1,26 +1,21 @@
-import { auth } from "../config/firebase";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth, } from "../config/firebase";
+import { signInWithEmailAndPassword, } from "firebase/auth";
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+// import functions from 'firebase/functions';
+// import admin from 'firebase-admin'
+// import addAdminRole from "../functions/index";
 
 export const Auth = () => {
     const [email, setEmail] = useState("");
+    // const [adminEmail, setAdminEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-
+    
     const login = async () => {
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
-            navigate('/')
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const logout = async () => {
-        try {
-            await signOut(auth);
+            await signInWithEmailAndPassword(auth, email, password)
             navigate('/')
         } catch (error) {
             console.error(error);
@@ -29,7 +24,7 @@ export const Auth = () => {
 
     return (
         <Col className="p-3">
-            <Row>
+            <Row className="mb-4">
                 <Form>
                     <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <Form.Label>Email address</Form.Label>
@@ -46,7 +41,6 @@ export const Auth = () => {
                         />
                     </Form.Group>
                     <Button onClick={login}>Login</Button>
-                    <Button onClick={logout}>Logout</Button>
                 </Form>
             </Row>
         </Col>

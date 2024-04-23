@@ -2,7 +2,7 @@ import './App.css';
 import { db } from './config/firebase';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { Navbar } from './components/Navbar/navbar';
+import Navbar from './components/Navbar/navbar';
 import ArtworkList from './components/Artwork/artworklist';
 import { Auth } from './components/auth';
 import { Route, Routes } from "react-router-dom"
